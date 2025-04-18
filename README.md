@@ -45,21 +45,30 @@ Para demonstrar que posso escrever código em inglês ou português, conforme o 
 Você pode acessar o projeto diretamente na web pelo link:  
 > [link do projeto web aqui] *(substitua pelo link real se quiser)*
 
+### 📱 Executando localmente
 
-Com o projeto aberto no VS Code, Android Studio ou Xcode, execute os seguintes comandos:
+Antes de executar o projeto, certifique-se de ter o Flutter instalado e configurado corretamente em seu ambiente.
 
-#### Web 
-
+1. Primeiro, instale as dependências:
 ```bash
 flutter pub get
-flutter run web
+```
 
-🖥 Emulador ou dispositivo físico
-#### Android 
+2. Escolha a plataforma desejada:
+
+#### 🌐 Web
 ```bash
-flutter pub get
-flutter run android
+flutter run -d chrome
+```
 
-#### Ios 
-flutter pub get
-flutter run ios
+#### 🤖 Android
+```bash
+flutter run -d android
+```
+*Certifique-se de ter um emulador Android rodando ou um dispositivo físico conectado via USB com o modo desenvolvedor ativado.*
+
+#### 🍎 iOS
+```bash
+flutter run -d ios
+```
+*Nota: Para executar no iOS, você precisa de um Mac com Xcode instalado e um simulador iOS configurado ou um dispositivo físico conectado.*
