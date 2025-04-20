@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:quizchallenge/common/colors.dart';
-import 'package:quizchallenge/views/home/home_page.dart';
-import 'package:quizchallenge/views/quiz/quiz_page.dart';
-import 'package:quizchallenge/views/ranking/ranking_page.dart';
-import 'package:quizchallenge/views/score/score_page.dart';
+import 'package:provider/provider.dart';
+import 'package:provider/single_child_widget.dart';
+import 'package:quizchallenge/common/providers.dart';
+import 'common/theme.dart';
+import 'common/routes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const App());
 }
 
@@ -14,39 +16,31 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Quiz Challenge',
-      theme: ThemeData(
-        colorScheme: ColorScheme.light(
-          primary: AppColors.enabledButtonBackground,
-          secondary: AppColors.selectedItemBackground,
-          background: AppColors.background,
-          surface: AppColors.whiteBackground,
-          onPrimary: AppColors.whiteBackground,
-          onSecondary: AppColors.whiteBackground,
-          onBackground: AppColors.listItemText,
-          onSurface: AppColors.listItemText,
-        ),
-        textTheme: const TextTheme(
-          titleLarge: TextStyle(
-            color: AppColors.quizTitle,
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
-          bodyLarge: TextStyle(
-            color: AppColors.listItemText,
-            fontSize: 16,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
+    return MultiProvider(
+      providers: AppProviders.providers.cast<SingleChildWidget>(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Quiz Challenge',
+        theme: AppTheme.lightTheme,
+        initialRoute: Routes.home,
+        routes: Routes.routes,
+        navigatorKey: GlobalKey<NavigatorState>(),
+        onGenerateRoute: (settings) {
+          return MaterialPageRoute(
+            builder:
+                (context) => WillPopScope(
+                  onWillPop: () async {
+                    if (Navigator.canPop(context)) {
+                      Navigator.pop(context);
+                      return false;
+                    }
+                    return true;
+                  },
+                  child: Routes.getRoute(settings.name),
+                ),
+          );
+        },
       ),
-      initialRoute: '/home',
-      routes: {
-        '/home': (context) => const HomePage(),
-        '/quiz': (context) => const QuizPage(),
-        '/ranking': (context) => const RankingPage(),
-        '/score': (context) => const ScorePage(),
-      },
     );
   }
 }

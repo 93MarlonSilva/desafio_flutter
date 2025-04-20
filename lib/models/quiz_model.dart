@@ -1,18 +1,18 @@
+import 'package:html_unescape/html_unescape.dart';
+
 class QuizModel {
   final int responseCode;
   final List<QuizResult> results;
 
-  QuizModel({
-    required this.responseCode,
-    required this.results,
-  });
+  QuizModel({required this.responseCode, required this.results});
 
   factory QuizModel.fromJson(Map<String, dynamic> json) {
     return QuizModel(
       responseCode: json['response_code'] as int,
-      results: (json['results'] as List)
-          .map((result) => QuizResult.fromJson(result))
-          .toList(),
+      results:
+          (json['results'] as List)
+              .map((result) => QuizResult.fromJson(result))
+              .toList(),
     );
   }
 }
@@ -35,15 +35,18 @@ class QuizResult {
   });
 
   factory QuizResult.fromJson(Map<String, dynamic> json) {
+    final unescape = HtmlUnescape();
+
     return QuizResult(
       type: json['type'] as String,
       difficulty: json['difficulty'] as String,
       category: json['category'] as String,
-      question: json['question'] as String,
-      correctAnswer: json['correct_answer'] as String,
-      incorrectAnswers: (json['incorrect_answers'] as List)
-          .map((answer) => answer as String)
-          .toList(),
+      question: unescape.convert(json['question']),
+      correctAnswer: unescape.convert(json['correct_answer']),
+      incorrectAnswers:
+          (json['incorrect_answers'] as List)
+              .map((answer) => unescape.convert(answer as String))
+              .toList(),
     );
   }
 }
