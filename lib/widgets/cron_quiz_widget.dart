@@ -6,11 +6,13 @@ class CronQuizWidget extends StatefulWidget {
   final Function(int) onTimeUpdate;
   final VoidCallback onTimeEnd;
   final int initialSeconds;
+  final ValueNotifier<bool> isRunning;
 
   const CronQuizWidget({
     super.key,
     required this.onTimeUpdate,
     required this.onTimeEnd,
+    required this.isRunning,
     this.initialSeconds = 60,
   });
 
@@ -27,17 +29,26 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
     super.initState();
     _seconds = widget.initialSeconds;
     _startTimer();
+    widget.isRunning.addListener(_onRunningChanged);
   }
 
   @override
   void dispose() {
     _timer.cancel();
+    widget.isRunning.removeListener(_onRunningChanged);
     super.dispose();
+  }
+
+  void _onRunningChanged() {
+    if (!widget.isRunning.value) {
+      _timer.cancel();
+      debugPrint('CronQuizWidget: Timer fechado');
+    }
   }
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (_seconds > 0) {
+      if (_seconds > 0 && widget.isRunning.value) {
         setState(() {
           _seconds--;
           widget.onTimeUpdate(_seconds);

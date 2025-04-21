@@ -1,6 +1,6 @@
 class QuizHistoryModel {
   final DateTime date;
-  final Duration totalTime;
+  final int totalTime;
   final int score;
   final int correctAnswers;
   final int wrongAnswers;
@@ -17,7 +17,7 @@ class QuizHistoryModel {
   Map<String, dynamic> toMap() {
     return {
       'date': date.toIso8601String(),
-      'totalTime': totalTime.inSeconds,
+      'totalTime': totalTime,
       'score': score,
       'correctAnswers': correctAnswers,
       'wrongAnswers': wrongAnswers,
@@ -28,7 +28,7 @@ class QuizHistoryModel {
   factory QuizHistoryModel.fromMap(Map<String, dynamic> map) {
     return QuizHistoryModel(
       date: DateTime.parse(map['date']),
-      totalTime: Duration(seconds: map['totalTime']),
+      totalTime: map['totalTime'],
       score: map['score'],
       correctAnswers: map['correctAnswers'],
       wrongAnswers: map['wrongAnswers'],

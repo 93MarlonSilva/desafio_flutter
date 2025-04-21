@@ -3,25 +3,37 @@ import 'package:provider/provider.dart';
 import 'package:quizchallenge/common/app_colors.dart';
 import 'package:quizchallenge/common/routes.dart';
 import 'package:quizchallenge/viewmodels/main_view_model.dart';
-import 'package:quizchallenge/widgets/custom_page_widget.dart';
 import 'package:quizchallenge/widgets/list_quiz_item_widget.dart';
 import 'package:quizchallenge/widgets/progress_track_widget.dart';
 import 'package:quizchallenge/widgets/cron_quiz_widget.dart';
 import '../viewmodels/quiz_view_model.dart';
 import '../widgets/button_widget.dart';
 
-class QuizView extends StatelessWidget {
+class QuizView extends StatefulWidget {
   const QuizView({super.key});
+
+  @override
+  State<QuizView> createState() => _QuizViewState();
+}
+
+class _QuizViewState extends State<QuizView> {
+  final ValueNotifier<bool> _isCronRunning = ValueNotifier<bool>(true);
+
+  @override
+  void dispose() {
+    _isCronRunning.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<MainViewModel>(
       builder: (context, mainViewModel, child) {
-        return Scaffold(
-          backgroundColor: AppColors.background,
-          body: SafeArea(
-            child: CustomPageWidget(
-              isLoading: mainViewModel.isLoading,
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Scaffold(
+            backgroundColor: AppColors.background,
+            body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
@@ -29,12 +41,14 @@ class QuizView extends StatelessWidget {
                     const SizedBox(height: 40),
                     Consumer<QuizViewModel>(
                       builder: (context, viewModel, child) {
+                        _isCronRunning.value = viewModel.isCronRunning;
                         return KeyedSubtree(
                           key: ValueKey(viewModel.currentQuestionIndex),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               CronQuizWidget(
+                                isRunning: _isCronRunning,
                                 initialSeconds: 60,
                                 onTimeUpdate: (time) {
                                   viewModel.updateQuestionTime(time);
@@ -63,14 +77,20 @@ class QuizView extends StatelessWidget {
                               ),
                               InkWell(
                                 onTap: () {
+                                  print(
+                                    'Close button pressed - Stopping cronometer',
+                                  );
+                                  _isCronRunning.value = false;
+                                  final quizViewModel =
+                                      context.read<QuizViewModel>();
+                                  quizViewModel.stopCronometer();
+
+                                  // Primeiro navega, depois reseta
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     Routes.home,
                                     (route) => false,
                                   ).then((_) {
-                                    final quizViewModel =
-                                        context.read<QuizViewModel>();
-
                                     quizViewModel.resetQuiz();
                                     quizViewModel.setQuestions([]);
                                   });
@@ -82,7 +102,7 @@ class QuizView extends StatelessWidget {
                                     color: AppColors.backgroundLight,
                                     shape: BoxShape.circle,
                                   ),
-                                  child: Icon(Icons.close),
+                                  child: const Icon(Icons.close),
                                 ),
                               ),
                             ],
@@ -165,6 +185,12 @@ class QuizView extends StatelessWidget {
                                 viewModel.currentQuestionIndex,
                                 '',
                               );
+                            }
+                            if (viewModel.currentQuestionIndex ==
+                                viewModel.questions.length - 1) {
+                              final quizViewModel =
+                                  context.read<QuizViewModel>();
+                              quizViewModel.stopCronometer();
                             }
                             viewModel.nextQuestion(context);
                           },

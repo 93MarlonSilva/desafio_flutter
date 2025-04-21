@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:quizchallenge/common/app_colors.dart';
-import 'package:quizchallenge/widgets/custom_page_widget.dart';
+import 'package:quizchallenge/common/routes.dart';
 import 'package:quizchallenge/widgets/dropdown_widget.dart';
+import 'package:quizchallenge/widgets/bottom_menu_widget.dart';
 import '../models/category_model.dart';
 import '../viewmodels/main_view_model.dart';
 import '../viewmodels/quiz_view_model.dart';
@@ -16,26 +17,22 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
-        child: CustomPageWidget(
-          isLoading: context.watch<MainViewModel>().isLoading,
+        child: Visibility(
+          visible: !context.watch<MainViewModel>().isLoading,
+          replacement: const Center(
+            child: CircularProgressIndicator(color: AppColors.babyBlue),
+          ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                const SizedBox(height: 64),
-
+                const SizedBox(height: 40),
+                Image.asset('assets/images/war.png', width: 200, height: 200),
                 Text(
-                  'Quiz',
+                  'Try your best',
                   style: Theme.of(
                     context,
                   ).textTheme.displayLarge!.copyWith(fontSize: 40),
-                ),
-                Text(
-                  'Challenge',
-                  style: Theme.of(context).textTheme.displayMedium!.copyWith(
-                    color: AppColors.babyBlue,
-                    fontSize: 40,
-                  ),
                 ),
                 const SizedBox(height: 64),
                 Consumer<MainViewModel>(
@@ -45,8 +42,7 @@ class HomeView extends StatelessWidget {
                       children: [
                         CustomDropdownWidget<CategoryModel>(
                           value: mainViewModel.selectedCategory,
-                          label:
-                              'Gerar o codigo no banco e trazer o registro depois salvar nele',
+                          label: 'Category',
                           items: mainViewModel.categories,
                           onChanged: mainViewModel.setSelectedCategory,
                           itemToString: (item) => item.name,
@@ -78,6 +74,8 @@ class HomeView extends StatelessWidget {
                       onPressed: () async {
                         final quizViewModel = context.read<QuizViewModel>();
 
+                        quizViewModel.resetQuiz();
+
                         final request = await quizViewModel.onLoadQuizData(
                           mainViewModel.selectedCategory?.id.toString(),
                           mainViewModel.selectedDifficulty,
@@ -85,9 +83,9 @@ class HomeView extends StatelessWidget {
                         );
 
                         if (request && context.mounted) {
-                          Navigator.pushNamed(context, '/quiz');
+                          Navigator.pushNamed(context, Routes.quiz);
                         } else if (context.mounted) {
-                          Navigator.pushNamed(context, '/maintenance');
+                          Navigator.pushNamed(context, Routes.maintenance);
                         }
                       },
                     );
@@ -99,6 +97,7 @@ class HomeView extends StatelessWidget {
           ),
         ),
       ),
+      bottomNavigationBar: const BottomMenuWidget(),
     );
   }
 }

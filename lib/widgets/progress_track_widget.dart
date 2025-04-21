@@ -13,15 +13,55 @@ class ProgressTrackWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final progress = (currentIndex) / totalQuestions;
-    final indicatorPosition = progress * (300 - 60);
+    final validTotalQuestions = totalQuestions > 0 ? totalQuestions : 1;
+    final validCurrentIndex = currentIndex.clamp(0, validTotalQuestions - 1);
+
+    // Padding side horizontal 
+    const externalPadding = 20.0; 
+    final totalScreenWidth = MediaQuery.of(context).size.width - externalPadding;
+
+    // Calc space used by track
+    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: AppColors.percentageText,
+        );
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: '$validTotalQuestions/$validTotalQuestions',
+        style: textStyle,
+      ),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final textWidth = textPainter.width;
+    const sizedBoxWidth = 12.0; 
+    const internalPadding = 32.0; // Internal padding
+
+    // Space available for track
+    final screenWidth = totalScreenWidth - internalPadding - textWidth - sizedBoxWidth;
+
+    // Indicator width (dynamic based on number of questions)
+    final minIndicatorWidth = 40.0;
+    final maxIndicatorWidth = 80.0;
+    final indicatorWidth = (screenWidth / validTotalQuestions).clamp(
+      minIndicatorWidth,
+      maxIndicatorWidth,
+    );
+
+    // Space available for indicator
+    final trackWidth = screenWidth - indicatorWidth;
+
+    // Space between indicator positions
+    final spacing = validTotalQuestions > 1 ? trackWidth / (validTotalQuestions - 1) : 0.0;
+
+    // Current indicator position (ensuring it doesn't exceed limits)
+    final indicatorPosition = (validCurrentIndex * spacing).clamp(0.0, trackWidth);
 
     return SizedBox(
-      width: MediaQuery.of(context).size.width - 42,
+      width: totalScreenWidth - internalPadding,
       child: Row(
         children: [
           Expanded(
             child: Stack(
+              clipBehavior: Clip.none,
               children: [
                 Container(
                   height: 12,
@@ -33,7 +73,7 @@ class ProgressTrackWidget extends StatelessWidget {
                 Positioned(
                   left: indicatorPosition,
                   child: Container(
-                    width: 60,
+                    width: indicatorWidth,
                     height: 12,
                     decoration: BoxDecoration(
                       color: AppColors.babyBlue,
@@ -44,12 +84,10 @@ class ProgressTrackWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: sizedBoxWidth),
           Text(
-            '${currentIndex + 1}/$totalQuestions',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyLarge?.copyWith(color: AppColors.percentageText),
+            '${validCurrentIndex + 1}/$validTotalQuestions',
+            style: textStyle,
           ),
         ],
       ),
