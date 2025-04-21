@@ -56,10 +56,10 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
             'CronQuizWidget: Tempo atualizado para $_seconds segundos',
           );
         });
-      } else {
-        _timer.cancel();
-        widget.onTimeEnd();
+      } else if (_seconds == 0) {
         debugPrint('CronQuizWidget: Tempo acabou!');
+        widget.onTimeEnd();
+        _timer.cancel();
       }
     });
   }
@@ -104,8 +104,13 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 8),
-          Text('$_seconds', style: Theme.of(context).textTheme.displayMedium!),
+          const SizedBox(width: 4),
+          Text(
+            '$_seconds',
+            style: Theme.of(context).textTheme.displayMedium!.copyWith(
+              fontSize: 14,
+            ),
+          ),
         ],
       ),
     );

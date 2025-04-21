@@ -67,7 +67,7 @@ class _QuizViewState extends State<QuizView> {
                                 },
                               ),
                               Text(
-                                'Category',
+                                'Quiz #${viewModel.quizNumber}',
                                 style: Theme.of(
                                   context,
                                 ).textTheme.displayMedium!.copyWith(
@@ -83,7 +83,7 @@ class _QuizViewState extends State<QuizView> {
                                   _isCronRunning.value = false;
                                   final quizViewModel =
                                       context.read<QuizViewModel>();
-                                  quizViewModel.stopCronometer();
+                                  quizViewModel.stopCron();
 
                                   // Primeiro navega, depois reseta
                                   Navigator.pushNamedAndRemoveUntil(
@@ -151,6 +151,7 @@ class _QuizViewState extends State<QuizView> {
                                   return Padding(
                                     padding: const EdgeInsets.only(bottom: 30),
                                     child: ListQuizItemWidget(
+                                      key: Key('quiz_option_$index'),
                                       text: option,
                                       letter: letter,
                                       isSelected:
@@ -175,7 +176,7 @@ class _QuizViewState extends State<QuizView> {
                     Consumer<QuizViewModel>(
                       builder: (context, viewModel, child) {
                         return CustomButtonWidget(
-                          text: 'CONTINUAR',
+                          text: 'NEXT',
                           enabled: viewModel.canProceed,
                           onPressed: () {
                             if (viewModel
@@ -190,7 +191,7 @@ class _QuizViewState extends State<QuizView> {
                                 viewModel.questions.length - 1) {
                               final quizViewModel =
                                   context.read<QuizViewModel>();
-                              quizViewModel.stopCronometer();
+                              quizViewModel.stopCron();
                             }
                             viewModel.nextQuestion(context);
                           },

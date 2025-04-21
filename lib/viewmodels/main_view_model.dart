@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:quizchallenge/common/functions.dart';
+import 'package:quizchallenge/common/routes.dart';
 import '../models/category_model.dart';
 
 class MainViewModel extends ChangeNotifier {
@@ -49,5 +51,53 @@ class MainViewModel extends ChangeNotifier {
   void setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  void handleQuizError(BuildContext context, int errorCode) {
+    String message;
+    ShowBottomToastType type;
+
+    switch (errorCode) {
+      case 1: // No Results
+        message = 'No questions found for your selection. Please try a different category or difficulty.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 2: // Invalid Parameter
+        message = 'Invalid parameters. Please check your selections and try again.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 3: // Token Not Found
+        message = 'Session error. Please try again.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 4: // Token Empty
+        message = 'No more questions available. Please try a different category.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 5: // Rate Limit
+        message = 'Please wait a few seconds before trying again.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 6: // Invalid amount
+        message = 'Invalid number of questions. Please select a valid amount.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 7: // JSON conversion error
+        message = 'Error processing quiz data. Please try again.';
+        type = ShowBottomToastType.mainColor;
+        break;
+      case 8: // API error
+        Navigator.pushNamed(context, Routes.maintenance);
+        return;
+      default:
+        message = 'An unexpected error occurred. Please try again.';
+        type = ShowBottomToastType.mainColor;
+    }
+
+    AppFunctions.showOverlayMessage(
+      context: context,
+      message: message,
+      type: type,
+    );
   }
 }

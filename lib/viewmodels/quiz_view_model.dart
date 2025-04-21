@@ -13,8 +13,9 @@ class QuizViewModel extends ChangeNotifier {
   bool _isLoading = false;
   List<int> _questionTimes = [];
   int _totalTime = 0;
-  bool _isCronRunning = true;
+  bool _isCronRunning = false;
   int? _cachedScore;
+  int _quizNumber = 1;
 
   // Getters
   QuizModel? get quizData => _quizData;
@@ -25,7 +26,7 @@ class QuizViewModel extends ChangeNotifier {
 
   int get currentQuestionIndex => _currentQuestionIndex;
 
-  bool get isQuizComplete => _currentQuestionIndex >= _questions.length;
+  bool get isQuizComplete => _questions.isEmpty ? false : _currentQuestionIndex >= _questions.length;
 
   int get score {
     if (_cachedScore == null) {
@@ -33,11 +34,11 @@ class QuizViewModel extends ChangeNotifier {
       print('Questions length: ${_questions.length}');
       print('User answers: $_userAnswers');
 
-      // Calcula o valor base de cada acerto (100 pontos divididos pelo número de questões)
+      // Calculate base points per question (100 points divided by number of questions)
       final basePointsPerQuestion = 100 / _questions.length;
       print('Base points per question: $basePointsPerQuestion');
 
-      // Calcula os pontos base (sem penalidade de tempo)
+      // Calculate base points (without time penalty)
       final baseScore =
           _userAnswers
               .where(
@@ -49,11 +50,11 @@ class QuizViewModel extends ChangeNotifier {
           basePointsPerQuestion;
       print('Base score: $baseScore');
 
-      // Calcula a penalidade de tempo
+      // Calculate time penalty
       double timePenalty = 0;
       for (var i = 0; i < _questionTimes.length; i++) {
         if (_userAnswers[i].isNotEmpty) {
-          // Só aplica penalidade se a pergunta foi respondida
+          // Only apply penalty if the question was answered
           final timeSpent = 60 - _questionTimes[i];
           final penaltyPer10Seconds = 4;
           final penalty = (timeSpent ~/ 10) * penaltyPer10Seconds;
@@ -63,7 +64,7 @@ class QuizViewModel extends ChangeNotifier {
       }
       print('Total time penalty: $timePenalty');
 
-      // Aplica a penalidade e garante que o score não fique negativo
+      // Apply penalty and ensure score doesn't go negative
       _cachedScore = (baseScore - timePenalty).clamp(0, 100).round();
       print('Final score: $_cachedScore');
       print('=== SCORE CALCULATION COMPLETED ===');
@@ -96,17 +97,19 @@ class QuizViewModel extends ChangeNotifier {
 
   bool get isCronRunning => _isCronRunning;
 
+  int get quizNumber => _quizNumber;
+
   // Functions
 
   // Load the quiz data from the API
-  Future<bool> onLoadQuizData(
+  Future<dynamic> onLoadQuizData(
     String? category,
     String? difficulty,
     int? amount,
   ) async {
     if (amount == null || amount <= 0) {
       debugPrint('Invalid amount: $amount');
-      return false;
+      return 6; // Invalid parameter error
     }
 
     _isLoading = true;
@@ -121,24 +124,29 @@ class QuizViewModel extends ChangeNotifier {
 
       if (jsonResponse['response_code'] == 0 &&
           jsonResponse['results'] != null) {
-        final quizModel = QuizModel.fromJson(jsonResponse);
+        try {
+          final quizModel = QuizModel.fromJson(jsonResponse);
 
-        if (quizModel.results.isNotEmpty) {
-          _quizData = quizModel;
-          _userAnswers = List.filled(_quizData!.results.length, '');
-          _questionTimes = List.filled(_quizData!.results.length, 60);
-          setQuestions(_quizData!.results);
-          return true;
+          if (quizModel.results.isNotEmpty) {
+            _quizData = quizModel;
+            _userAnswers = List.filled(_quizData!.results.length, '');
+            _questionTimes = List.filled(_quizData!.results.length, 60);
+            setQuestions(_quizData!.results);
+            return 0;
+          }
+        } catch (e) {
+          debugPrint('Error converting JSON to QuizModel: $e');
+          return 7; // JSON conversion error
         }
       }
 
       debugPrint(
-        'Erro na API: response_code = ${jsonResponse['response_code']}',
+        'API Error: response_code = ${jsonResponse['response_code']}',
       );
-      return false;
+      return jsonResponse['response_code'];
     } catch (e) {
-      debugPrint('Erro ao carregar os dados do quiz: $e');
-      return false;
+      debugPrint('Error loading quiz data: $e');
+      return 8; // API error
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -176,7 +184,7 @@ class QuizViewModel extends ChangeNotifier {
           _currentQuestionIndex < _questionTimes.length) {
         final currentTime = _questionTimes[_currentQuestionIndex];
         debugPrint(
-          'Salvando tempo final da pergunta $_currentQuestionIndex: $currentTime segundos',
+          'Saving final time for question $_currentQuestionIndex: $currentTime seconds',
         );
       }
       _currentQuestionIndex++;
@@ -186,12 +194,11 @@ class QuizViewModel extends ChangeNotifier {
           _currentQuestionIndex < _questionTimes.length) {
         final currentTime = _questionTimes[_currentQuestionIndex];
         debugPrint(
-          'Salvando tempo final da última pergunta: $currentTime segundos',
+          'Saving final time for last question: $currentTime seconds',
         );
       }
       calculateTotalTime();
 
-      // Calculate final score
       final finalScore = score;
       print('=== FINAL SCORE CALCULATED ===');
       print('Score: $finalScore');
@@ -217,12 +224,12 @@ class QuizViewModel extends ChangeNotifier {
     if (_questionTimes.length <= _currentQuestionIndex) {
       _questionTimes.add(60);
       debugPrint(
-        'Novo timer iniciado para pergunta $_currentQuestionIndex: 60 segundos',
+        'New timer started for question $_currentQuestionIndex: 60 seconds',
       );
     } else {
       _questionTimes[_currentQuestionIndex] = 60;
       debugPrint(
-        'Timer resetado para pergunta $_currentQuestionIndex: 60 segundos',
+        'Timer reset for question $_currentQuestionIndex: 60 seconds',
       );
     }
     notifyListeners();
@@ -233,20 +240,21 @@ class QuizViewModel extends ChangeNotifier {
         _currentQuestionIndex < _questionTimes.length) {
       _questionTimes[_currentQuestionIndex] = time;
       debugPrint(
-        'Tempo atualizado para pergunta $_currentQuestionIndex: $time segundos',
+        'Time updated for question $_currentQuestionIndex: $time seconds',
       );
       notifyListeners();
     }
   }
 
+  // Calculate total time spent on all questions
   void calculateTotalTime() {
-    debugPrint('Tempos das perguntas: $_questionTimes');
+    debugPrint('Question times: $_questionTimes');
     _totalTime = _questionTimes.fold(0, (sum, time) {
       final timeSpent = time == 60 ? 0 : 60 - time;
-      debugPrint('Tempo gasto nesta pergunta: $timeSpent segundos');
+      debugPrint('Time spent on this question: $timeSpent seconds');
       return sum + timeSpent;
     });
-    debugPrint('Tempo total calculado: $_totalTime segundos');
+    debugPrint('Total time spent: $_totalTime seconds');
     notifyListeners();
   }
 
@@ -258,12 +266,14 @@ class QuizViewModel extends ChangeNotifier {
             _questionTimes[_currentQuestionIndex] == 0);
   }
 
-  void stopCronometer() {
+  // Stop the timer for the current question
+  void stopCron() {
     _isCronRunning = false;
     notifyListeners();
   }
 
-  void startCronometer() {
+  // Start the timer for the current question
+  void startCron() {
     _isCronRunning = true;
     notifyListeners();
   }
@@ -278,16 +288,23 @@ class QuizViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Reset the quiz state
   void resetQuiz() {
-    _currentQuestionIndex = 0;
+    _quizData = null;
     _userAnswers = [];
-    _questionTimes = [];
-    _totalTime = 0;
     _questions = [];
     _shuffledOptions = [];
-    _quizData = null;
+    _currentQuestionIndex = 0;
+    _isLoading = false;
+    _questionTimes = [];
+    _totalTime = 0;
     _isCronRunning = false;
     _cachedScore = null;
+    notifyListeners();
+  }
+
+  void setQuizNumber(int number) {
+    _quizNumber = number;
     notifyListeners();
   }
 }

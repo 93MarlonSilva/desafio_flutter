@@ -8,6 +8,7 @@ import '../viewmodels/score_view_model.dart';
 import '../widgets/button_widget.dart';
 import '../models/quiz_history_model.dart';
 import '../viewmodels/quiz_history_view_model.dart';
+import 'package:hive/hive.dart';
 
 class ScoreView extends StatelessWidget {
   const ScoreView({super.key});
@@ -30,89 +31,100 @@ class ScoreView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: InkWell(
-                            onTap: () async {
-                              final quizViewModel =
-                                  context.read<QuizViewModel>();
-                              final historyViewModel =
-                                  context.read<QuizHistoryViewModel>();
-
-                              try {
-                                print('=== SAVING QUIZ BEFORE CLOSING ===');
-                                final quizHistory = QuizHistoryModel(
-                                  date: DateTime.now(),
-                                  totalTime: quizViewModel.totalTime,
-                                  score: quizViewModel.score,
-                                  correctAnswers: quizViewModel.correctAnswers,
-                                  wrongAnswers: quizViewModel.wrongAnswers,
-                                );
-
-                                print('Saving quiz history');
-                                await historyViewModel.addQuizToHistory(
-                                  quizHistory,
-                                );
-                                print('Quiz history saved');
-
-                                if (context.mounted) {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    Routes.home,
-                                    (route) => false,
-                                  ).then((_) {
-                                    quizViewModel.resetQuiz();
-                                    quizViewModel.setQuestions([]);
-                                  });
-                                }
-                              } catch (e) {
-                                print('Error saving quiz history: $e');
-                                if (context.mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Error saving quiz history: $e',
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: InkWell(
+                              onTap: () async {
+                                final quizViewModel =
+                                    context.read<QuizViewModel>();
+                                final historyViewModel =
+                                    context.read<QuizHistoryViewModel>();
+                          
+                                try {
+                                  print('=== SAVING QUIZ BEFORE CLOSING ===');
+                                  final quizHistory = QuizHistoryModel(
+                                    date: DateTime.now(),
+                                    totalTime: quizViewModel.totalTime,
+                                    score: quizViewModel.score,
+                                    correctAnswers: quizViewModel.correctAnswers,
+                                    wrongAnswers: quizViewModel.wrongAnswers,
                                   );
+                          
+                                  print('Saving quiz history');
+                                  if (!Hive.isBoxOpen('quizHistory')) {
+                                    await Hive.openBox<QuizHistoryModel>('quizHistory');
+                                  }
+                                  await historyViewModel.addQuizToHistory(
+                                    quizHistory,
+                                  );
+                                  print('Quiz history saved');
+                          
+                                  if (context.mounted) {
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      Routes.home,
+                                      (route) => false,
+                                    ).then((_) {
+                                      quizViewModel.resetQuiz();
+                                      quizViewModel.setQuestions([]);
+                                    });
+                                  }
+                                } catch (e) {
+                                  print('Error saving quiz history: $e');
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(
+                                          'Error saving quiz history: $e',
+                                        ),
+                                        backgroundColor: Colors.red,
+                                      ),
+                                    );
+                                  }
                                 }
-                              }
-                            },
-                            child: Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: AppColors.backgroundLight,
-                                shape: BoxShape.circle,
+                              },
+                              child: Container(
+                                width: 36,
+                                height: 36,
+                                decoration: BoxDecoration(
+                                  color: AppColors.backgroundLight,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.close),
                               ),
-                              child: const Icon(Icons.close),
                             ),
                           ),
                         ),
                         const SizedBox(height: 24),
                         Consumer<QuizViewModel>(
                           builder: (context, quizViewModel, child) {
-                            return Visibility(
-                              visible: quizViewModel.score > 0,
-                              replacement: Image.asset(
-                                'assets/images/score_fail.png',
-                                width: 200,
-                                height: 200,
-                              ),
-                              child: Image.asset(
-                                'assets/images/score_success.png',
-                                width: 200,
-                                height: 200,
-                              ),
+                            return Column(
+                              children: [
+                                Visibility(
+                                  visible: quizViewModel.score > 0,
+                                  replacement: Image.asset(
+                                    'assets/images/score_fail.png',
+                                    width: 200,
+                                    height: 200,
+                                  ),
+                                  child: Image.asset(
+                                    'assets/images/score_success.png',
+                                    width: 200,
+                                    height: 200,
+                                  ),
+                                ),
+                                 const SizedBox(height: 24),
+                                Text(
+                                  'Quiz result #${quizViewModel.quizNumber}',
+                                  style: Theme.of(context).textTheme.displayLarge!,
+                                ),
+                              ],
                             );
                           },
                         ),
-                        const SizedBox(height: 24),
-                        Text(
-                          'Quiz #156 Result',
-                          style: Theme.of(context).textTheme.displayLarge!,
-                        ),
+                       
                         const SizedBox(height: 58),
                         Consumer<QuizViewModel>(
                           builder: (context, viewModel, child) {

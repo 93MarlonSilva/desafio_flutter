@@ -16,7 +16,7 @@ class ProgressTrackWidget extends StatelessWidget {
     final validTotalQuestions = totalQuestions > 0 ? totalQuestions : 1;
     final validCurrentIndex = currentIndex.clamp(0, validTotalQuestions - 1);
 
-    // Padding side horizontal 
+    // Horizontal side padding
     const externalPadding = 20.0; 
     final totalScreenWidth = MediaQuery.of(context).size.width - externalPadding;
 
