@@ -33,16 +33,17 @@ class DatabaseService {
       final currentHistory = box.values.toList();
       debugPrint('Current history size before save: ${currentHistory.length}');
 
-      // Verifica se já existe um quiz com a mesma data
+      // Verify if the quiz already exists in the history
       final existingQuiz = currentHistory.firstWhere(
         (q) => q.date.isAtSameMomentAs(quiz.date),
-        orElse: () => QuizHistoryModel(
-          date: DateTime(0),
-          totalTime: 0,
-          score: 0,
-          correctAnswers: 0,
-          wrongAnswers: 0,
-        ),
+        orElse:
+            () => QuizHistoryModel(
+              date: DateTime(0),
+              totalTime: 0,
+              score: 0,
+              correctAnswers: 0,
+              wrongAnswers: 0,
+            ),
       );
 
       if (existingQuiz.date.year != 0) {
