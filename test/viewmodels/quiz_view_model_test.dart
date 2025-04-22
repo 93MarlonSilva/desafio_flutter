@@ -38,12 +38,12 @@ void main() {
     });
 
     test('Initial state should be empty', () {
-      print('Initial state test:');
-      print('Questions length: ${viewModel.questions.length}');
-      print('User answers length: ${viewModel.userAnswers.length}');
-      print('Questions: ${viewModel.questions}');
-      print('User answers: ${viewModel.userAnswers}');
-      
+      debugPrint('Initial state test:');
+      debugPrint('Questions length: ${viewModel.questions.length}');
+      debugPrint('User answers length: ${viewModel.userAnswers.length}');
+      debugPrint('Questions: ${viewModel.questions}');
+      debugPrint('User answers: ${viewModel.userAnswers}');
+
       expect(viewModel.questions, isEmpty);
       expect(viewModel.userAnswers, isEmpty);
       expect(viewModel.currentQuestionIndex, equals(0));
@@ -53,10 +53,10 @@ void main() {
     test('Setting questions should initialize state', () async {
       viewModel.resetQuiz();
       expect(viewModel.isCronRunning, isFalse);
-      
+
       viewModel.setQuestions(mockQuestions);
       await Future.delayed(Duration.zero);
-      
+
       expect(viewModel.questions.length, equals(2));
       expect(viewModel.userAnswers.length, equals(2));
       expect(viewModel.userAnswers[0], isEmpty);
@@ -75,7 +75,7 @@ void main() {
       viewModel.setQuestions(mockQuestions);
       viewModel.setUserAnswer(0, 'Paris'); // Correct
       viewModel.setUserAnswer(1, '3'); // Wrong
-      
+
       // Base score should be 50 (100/2 questions, 1 correct)
       expect(viewModel.score, equals(50));
     });
@@ -91,29 +91,32 @@ void main() {
       viewModel.setQuestions(mockQuestions);
       viewModel.setUserAnswer(0, 'Paris');
       viewModel.nextQuestion(mockContext);
-      
+
       viewModel.resetQuiz();
-      
+
       expect(viewModel.questions, isEmpty);
       expect(viewModel.userAnswers, isEmpty);
       expect(viewModel.currentQuestionIndex, equals(0));
       expect(viewModel.isCronRunning, isFalse);
     });
 
-    test('Reset quiz for retry should maintain questions but reset answers', () {
-      viewModel.setQuestions(mockQuestions);
-      viewModel.setUserAnswer(0, 'Paris');
-      viewModel.nextQuestion(mockContext);
-      
-      viewModel.resetQuizForRetry();
-      
-      expect(viewModel.questions.length, equals(2));
-      expect(viewModel.userAnswers.length, equals(2));
-      expect(viewModel.userAnswers[0], isEmpty);
-      expect(viewModel.userAnswers[1], isEmpty);
-      expect(viewModel.currentQuestionIndex, equals(0));
-      expect(viewModel.isCronRunning, isTrue);
-    });
+    test(
+      'Reset quiz for retry should maintain questions but reset answers',
+      () {
+        viewModel.setQuestions(mockQuestions);
+        viewModel.setUserAnswer(0, 'Paris');
+        viewModel.nextQuestion(mockContext);
+
+        viewModel.resetQuizForRetry();
+
+        expect(viewModel.questions.length, equals(2));
+        expect(viewModel.userAnswers.length, equals(2));
+        expect(viewModel.userAnswers[0], isEmpty);
+        expect(viewModel.userAnswers[1], isEmpty);
+        expect(viewModel.currentQuestionIndex, equals(0));
+        expect(viewModel.isCronRunning, isTrue);
+      },
+    );
 
     test('Time tracking should work correctly', () {
       viewModel.setQuestions(mockQuestions);
@@ -121,7 +124,7 @@ void main() {
       viewModel.nextQuestion(mockContext);
       viewModel.updateQuestionTime(58); // 60 - 58 = 2 seconds
       viewModel.calculateTotalTime();
-      
+
       // First question: 60 - 59 = 1 second
       // Second question: 60 - 58 = 2 seconds
       // Total: 1 + 2 = 3 seconds
@@ -138,4 +141,4 @@ void main() {
       expect(viewModel.isCronRunning, isTrue);
     });
   });
-} 
+}

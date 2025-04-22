@@ -45,7 +45,7 @@ class _QuizViewState extends State<QuizView> {
                         return KeyedSubtree(
                           key: ValueKey(viewModel.currentQuestionIndex),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               CronQuizWidget(
                                 isRunning: _isCronRunning,
@@ -66,6 +66,7 @@ class _QuizViewState extends State<QuizView> {
                                   viewModel.nextQuestion(context);
                                 },
                               ),
+                              const SizedBox(width: 31),
                               Text(
                                 'Quiz #${viewModel.quizNumber}',
                                 style: Theme.of(
@@ -75,9 +76,10 @@ class _QuizViewState extends State<QuizView> {
                                   color: AppColors.black,
                                 ),
                               ),
+                              const Spacer(),
                               InkWell(
                                 onTap: () {
-                                  print(
+                                  debugPrint(
                                     'Close button pressed - Stopping cronometer',
                                   );
                                   _isCronRunning.value = false;

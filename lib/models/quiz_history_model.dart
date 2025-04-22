@@ -39,14 +39,13 @@ class QuizHistoryModel {
   }
 
   // Create from Map (maintained for compatibility)
-  // Create from Map (mantido para compatibilidade)
   factory QuizHistoryModel.fromMap(Map<String, dynamic> map) {
     return QuizHistoryModel(
       date: DateTime.parse(map['date']),
-      totalTime: map['totalTime'],
-      score: map['score'],
-      correctAnswers: map['correctAnswers'],
-      wrongAnswers: map['wrongAnswers'],
+      totalTime: map['totalTime'] is int ? map['totalTime'] : int.parse(map['totalTime'].toString()),
+      score: map['score'] is int ? map['score'] : int.parse(map['score'].toString()),
+      correctAnswers: map['correctAnswers'] is int ? map['correctAnswers'] : int.parse(map['correctAnswers'].toString()),
+      wrongAnswers: map['wrongAnswers'] is int ? map['wrongAnswers'] : int.parse(map['wrongAnswers'].toString()),
     );
   }
 }

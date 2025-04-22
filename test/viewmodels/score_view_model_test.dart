@@ -58,14 +58,17 @@ void main() {
       expect(viewModel.isLoading, isFalse);
     });
 
-    test('Loading state should update correctly during high score check', () async {
-      expect(viewModel.isLoading, isFalse);
-      
-      final future = viewModel.checkAndSaveHighScore(50);
-      expect(viewModel.isLoading, isTrue);
-      
-      await future;
-      expect(viewModel.isLoading, isFalse);
-    });
+    test(
+      'Loading state should update correctly during high score check',
+      () async {
+        expect(viewModel.isLoading, isFalse);
+
+        final future = viewModel.checkAndSaveHighScore(50);
+        expect(viewModel.isLoading, isTrue);
+
+        await future;
+        expect(viewModel.isLoading, isFalse);
+      },
+    );
   });
-} 
+}

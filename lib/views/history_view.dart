@@ -95,12 +95,22 @@ class _HistoryViewState extends State<HistoryView> {
                       const SizedBox(width: 16),
                       Text(
                         'Highest Score',
-                        style: Theme.of(context).textTheme.displayMedium!,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.displayMedium!.copyWith(
+                          color: AppColors.blackCustom,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const Spacer(),
                       Text(
                         viewModel.highestScore.toString(),
-                        style: Theme.of(context).textTheme.displayMedium!,
+                        style: Theme.of(
+                          context,
+                        ).textTheme.displayMedium!.copyWith(
+                          color: AppColors.blackCustom,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(width: 16),
                     ],
@@ -116,10 +126,7 @@ class _HistoryViewState extends State<HistoryView> {
                   child: ListView.builder(
                     itemCount: viewModel.quizHistory.length,
                     itemBuilder: (context, index) {
-                      final quiz =
-                          viewModel.quizHistory[viewModel.quizHistory.length -
-                              1 -
-                              index];
+                      final quiz = viewModel.quizHistory[index];
                       return Container(
                         width: double.infinity,
                         height: 60,
@@ -130,7 +137,7 @@ class _HistoryViewState extends State<HistoryView> {
                         ),
                         child: Row(
                           children: [
-                            const SizedBox(width: 24),
+                            const SizedBox(width: 16),
                             Container(
                               width: 36,
                               height: 36,

@@ -38,7 +38,7 @@ class AppFunctions {
                             : type == ShowBottomToastType.message
                             ? Colors.blueGrey
                             : type == ShowBottomToastType.warning
-                            ?  Color.fromARGB(255, 235, 157, 13)
+                            ? Color.fromARGB(255, 235, 157, 13)
                             : type == ShowBottomToastType.mainColor
                             ? Colors.black54
                             : AppColors.babyBlue,
@@ -47,7 +47,9 @@ class AppFunctions {
                   child: Center(
                     child: Text(
                       message,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.white),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium!.copyWith(color: Colors.white),
                     ),
                   ),
                 ),

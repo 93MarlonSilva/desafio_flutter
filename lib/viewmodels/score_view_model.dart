@@ -30,28 +30,28 @@ class ScoreViewModel extends ChangeNotifier {
   }
 
   Future<void> checkAndSaveHighScore(int currentScore) async {
-    print('=== CHECKING HIGH SCORE ===');
-    print('Current score: $currentScore');
+    debugPrint('=== CHECKING HIGH SCORE ===');
+    debugPrint('Current score: $currentScore');
 
     _isLoading = true;
     notifyListeners();
 
     try {
       final currentHighScore = await SharedPreferencesService.getHighScore();
-      print('Current high score: $currentHighScore');
+      debugPrint('Current high score: $currentHighScore');
 
       if (currentScore > currentHighScore) {
-        print('New high score detected! Saving...');
+        debugPrint('New high score detected! Saving...');
         await SharedPreferencesService.setHighScore(currentScore);
         _isNewHighScore = true;
-        print('New high score saved: $currentScore');
+        debugPrint('New high score saved: $currentScore');
       } else {
-        print(
+        debugPrint(
           'No new high score. Current score: $currentScore, High score: $currentHighScore',
         );
       }
     } catch (e) {
-      print('Error checking/saving high score: $e');
+      debugPrint('Error checking/saving high score: $e');
       rethrow;
     } finally {
       _isLoading = false;

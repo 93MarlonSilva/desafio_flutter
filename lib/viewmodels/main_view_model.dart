@@ -59,11 +59,13 @@ class MainViewModel extends ChangeNotifier {
 
     switch (errorCode) {
       case 1: // No Results
-        message = 'No questions found for your selection. Please try a different category or difficulty.';
+        message =
+            'No questions found for your selection. Please try a different category or difficulty.';
         type = ShowBottomToastType.mainColor;
         break;
       case 2: // Invalid Parameter
-        message = 'Invalid parameters. Please check your selections and try again.';
+        message =
+            'Invalid parameters. Please check your selections and try again.';
         type = ShowBottomToastType.mainColor;
         break;
       case 3: // Token Not Found
@@ -71,7 +73,8 @@ class MainViewModel extends ChangeNotifier {
         type = ShowBottomToastType.mainColor;
         break;
       case 4: // Token Empty
-        message = 'No more questions available. Please try a different category.';
+        message =
+            'No more questions available. Please try a different category.';
         type = ShowBottomToastType.mainColor;
         break;
       case 5: // Rate Limit

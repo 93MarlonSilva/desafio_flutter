@@ -68,10 +68,10 @@ class HomeView extends StatelessWidget {
               const Spacer(),
               if (context.watch<MainViewModel>().isLoading)
                 CircularProgressIndicator(
-                      color: AppColors.babyBlue,
-                      strokeWidth: 4,
-                    ),
-                    const SizedBox(height: 16),
+                  color: AppColors.babyBlue,
+                  strokeWidth: 4,
+                ),
+              const SizedBox(height: 16),
               Consumer<MainViewModel>(
                 builder: (context, mainViewModel, child) {
                   return CustomButtonWidget(
@@ -85,7 +85,7 @@ class HomeView extends StatelessWidget {
                       try {
                         mainViewModel.setLoading(true);
                         quizViewModel.resetQuiz();
-                 
+
                         final request = await quizViewModel.onLoadQuizData(
                           mainViewModel.selectedCategory?.id.toString(),
                           mainViewModel.selectedDifficulty,
@@ -96,7 +96,9 @@ class HomeView extends StatelessWidget {
 
                         if (request == 0) {
                           try {
-                            final box = Hive.box<QuizHistoryModel>('quizHistory');
+                            final box = Hive.box<QuizHistoryModel>(
+                              'quizHistory',
+                            );
                             final nextQuizNumber = box.length + 1;
                             quizViewModel.setQuizNumber(nextQuizNumber);
                             box.close();
@@ -111,12 +113,14 @@ class HomeView extends StatelessWidget {
                           mainViewModel.setLoading(false);
                           mainViewModel.handleQuizError(context, request);
                         }
-     
                       } catch (e) {
                         if (context.mounted) {
                           debugPrint('Error: $e');
                           mainViewModel.setLoading(false);
-                          mainViewModel.handleQuizError(context, 8); // API error
+                          mainViewModel.handleQuizError(
+                            context,
+                            8,
+                          ); // API error
                         }
                       }
                     },

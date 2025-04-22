@@ -15,7 +15,8 @@ class AppProviders {
     ChangeNotifierProvider<ScoreViewModel>(create: (_) => ScoreViewModel()),
     ChangeNotifierProvider<ProfileViewModel>(create: (_) => ProfileViewModel()),
     ChangeNotifierProvider<QuizHistoryViewModel>(
-      create: (context) => QuizHistoryViewModel(context.read<DatabaseService>()),
+      create:
+          (context) => QuizHistoryViewModel(context.read<DatabaseService>()),
     ),
   ];
 }

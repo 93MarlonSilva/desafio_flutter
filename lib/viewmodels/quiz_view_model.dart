@@ -26,17 +26,18 @@ class QuizViewModel extends ChangeNotifier {
 
   int get currentQuestionIndex => _currentQuestionIndex;
 
-  bool get isQuizComplete => _questions.isEmpty ? false : _currentQuestionIndex >= _questions.length;
+  bool get isQuizComplete =>
+      _questions.isEmpty ? false : _currentQuestionIndex >= _questions.length;
 
   int get score {
     if (_cachedScore == null) {
-      print('=== CALCULATING SCORE ===');
-      print('Questions length: ${_questions.length}');
-      print('User answers: $_userAnswers');
+      debugPrint('=== CALCULATING SCORE ===');
+      debugPrint('Questions length: ${_questions.length}');
+      debugPrint('User answers: $_userAnswers');
 
       // Calculate base points per question (100 points divided by number of questions)
       final basePointsPerQuestion = 100 / _questions.length;
-      print('Base points per question: $basePointsPerQuestion');
+      debugPrint('Base points per question: $basePointsPerQuestion');
 
       // Calculate base points (without time penalty)
       final baseScore =
@@ -48,7 +49,7 @@ class QuizViewModel extends ChangeNotifier {
               )
               .length *
           basePointsPerQuestion;
-      print('Base score: $baseScore');
+      debugPrint('Base score: $baseScore');
 
       // Calculate time penalty
       double timePenalty = 0;
@@ -59,15 +60,15 @@ class QuizViewModel extends ChangeNotifier {
           final penaltyPer10Seconds = 4;
           final penalty = (timeSpent ~/ 10) * penaltyPer10Seconds;
           timePenalty += penalty;
-          print('Question $i time penalty: $penalty');
+          debugPrint('Question $i time penalty: $penalty');
         }
       }
-      print('Total time penalty: $timePenalty');
+      debugPrint('Total time penalty: $timePenalty');
 
       // Apply penalty and ensure score doesn't go negative
       _cachedScore = (baseScore - timePenalty).clamp(0, 100).round();
-      print('Final score: $_cachedScore');
-      print('=== SCORE CALCULATION COMPLETED ===');
+      debugPrint('Final score: $_cachedScore');
+      debugPrint('=== SCORE CALCULATION COMPLETED ===');
     }
     return _cachedScore!;
   }
@@ -140,9 +141,7 @@ class QuizViewModel extends ChangeNotifier {
         }
       }
 
-      debugPrint(
-        'API Error: response_code = ${jsonResponse['response_code']}',
-      );
+      debugPrint('API Error: response_code = ${jsonResponse['response_code']}');
       return jsonResponse['response_code'];
     } catch (e) {
       debugPrint('Error loading quiz data: $e');
@@ -162,12 +161,12 @@ class QuizViewModel extends ChangeNotifier {
   }
 
   void setQuestions(List<QuizResult> questions) {
-    print('Setting new questions: ${questions.length}');
+    debugPrint('Setting new questions: ${questions.length}');
     _questions = questions;
     _userAnswers = List.generate(questions.length, (index) => '');
     _questionTimes = List.generate(questions.length, (index) => 60);
     _isCronRunning = true;
-    print('Questions set complete');
+    debugPrint('Questions set complete');
     _shuffledOptions =
         questions.map((question) {
           final options = [...question.incorrectAnswers];
@@ -193,18 +192,16 @@ class QuizViewModel extends ChangeNotifier {
       if (_questionTimes.isNotEmpty &&
           _currentQuestionIndex < _questionTimes.length) {
         final currentTime = _questionTimes[_currentQuestionIndex];
-        debugPrint(
-          'Saving final time for last question: $currentTime seconds',
-        );
+        debugPrint('Saving final time for last question: $currentTime seconds');
       }
       calculateTotalTime();
 
       final finalScore = score;
-      print('=== FINAL SCORE CALCULATED ===');
-      print('Score: $finalScore');
-      print('Total Time: $_totalTime');
-      print('Correct Answers: $correctAnswers');
-      print('Wrong Answers: $wrongAnswers');
+      debugPrint('=== FINAL SCORE CALCULATED ===');
+      debugPrint('Score: $finalScore');
+      debugPrint('Total Time: $_totalTime');
+      debugPrint('Correct Answers: $correctAnswers');
+      debugPrint('Wrong Answers: $wrongAnswers');
 
       // Save high score
       final scoreViewModel = context.read<ScoreViewModel>();
@@ -228,9 +225,7 @@ class QuizViewModel extends ChangeNotifier {
       );
     } else {
       _questionTimes[_currentQuestionIndex] = 60;
-      debugPrint(
-        'Timer reset for question $_currentQuestionIndex: 60 seconds',
-      );
+      debugPrint('Timer reset for question $_currentQuestionIndex: 60 seconds');
     }
     notifyListeners();
   }
@@ -250,7 +245,7 @@ class QuizViewModel extends ChangeNotifier {
   void calculateTotalTime() {
     debugPrint('Question times: $_questionTimes');
     _totalTime = _questionTimes.fold(0, (sum, time) {
-      final timeSpent = time == 60 ? 0 : 60 - time;
+      final timeSpent = 60 - time;
       debugPrint('Time spent on this question: $timeSpent seconds');
       return sum + timeSpent;
     });

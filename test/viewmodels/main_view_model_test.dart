@@ -66,4 +66,4 @@ void main() {
       expect(viewModel.isLoading, isFalse);
     });
   });
-} 
+}

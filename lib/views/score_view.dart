@@ -41,26 +41,44 @@ class ScoreView extends StatelessWidget {
                                     context.read<QuizViewModel>();
                                 final historyViewModel =
                                     context.read<QuizHistoryViewModel>();
-                          
+
                                 try {
-                                  print('=== SAVING QUIZ BEFORE CLOSING ===');
+                                  debugPrint(
+                                    '=== SAVING QUIZ BEFORE CLOSING ===',
+                                  );
+                                  debugPrint('Current quiz data:');
+                                  debugPrint('- Total Time: ${quizViewModel.totalTime}');
+                                  debugPrint('- Score: ${quizViewModel.score}');
+                                  debugPrint('- Correct Answers: ${quizViewModel.correctAnswers}');
+                                  debugPrint('- Wrong Answers: ${quizViewModel.wrongAnswers}');
+
                                   final quizHistory = QuizHistoryModel(
                                     date: DateTime.now(),
                                     totalTime: quizViewModel.totalTime,
                                     score: quizViewModel.score,
-                                    correctAnswers: quizViewModel.correctAnswers,
+                                    correctAnswers:
+                                        quizViewModel.correctAnswers,
                                     wrongAnswers: quizViewModel.wrongAnswers,
                                   );
-                          
-                                  print('Saving quiz history');
+
+                                  debugPrint('Created quiz history object:');
+                                  debugPrint('- Date: ${quizHistory.date}');
+                                  debugPrint('- Total Time: ${quizHistory.totalTime}');
+                                  debugPrint('- Score: ${quizHistory.score}');
+                                  debugPrint('- Correct Answers: ${quizHistory.correctAnswers}');
+                                  debugPrint('- Wrong Answers: ${quizHistory.wrongAnswers}');
+
+                                  debugPrint('Saving quiz history');
                                   if (!Hive.isBoxOpen('quizHistory')) {
-                                    await Hive.openBox<QuizHistoryModel>('quizHistory');
+                                    await Hive.openBox<QuizHistoryModel>(
+                                      'quizHistory',
+                                    );
                                   }
                                   await historyViewModel.addQuizToHistory(
                                     quizHistory,
                                   );
-                                  print('Quiz history saved');
-                          
+                                  debugPrint('Quiz history saved successfully');
+
                                   if (context.mounted) {
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
@@ -72,7 +90,7 @@ class ScoreView extends StatelessWidget {
                                     });
                                   }
                                 } catch (e) {
-                                  print('Error saving quiz history: $e');
+                                  debugPrint('Error saving quiz history: $e');
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
@@ -115,16 +133,17 @@ class ScoreView extends StatelessWidget {
                                     height: 200,
                                   ),
                                 ),
-                                 const SizedBox(height: 24),
+                                const SizedBox(height: 24),
                                 Text(
                                   'Quiz result #${quizViewModel.quizNumber}',
-                                  style: Theme.of(context).textTheme.displayLarge!,
+                                  style:
+                                      Theme.of(context).textTheme.displayLarge!,
                                 ),
                               ],
                             );
                           },
                         ),
-                       
+
                         const SizedBox(height: 58),
                         Consumer<QuizViewModel>(
                           builder: (context, viewModel, child) {
