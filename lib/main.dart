@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: AppProviders.providers,
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Quiz Challenge',
         theme: AppTheme.lightTheme,
         initialRoute: Routes.home,

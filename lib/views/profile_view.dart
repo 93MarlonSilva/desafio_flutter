@@ -15,7 +15,7 @@ class ProfileView extends StatelessWidget {
         child: Consumer<ProfileViewModel>(
           builder: (context, viewModel, child) {
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 20,  horizontal: 20),
               child: Row(
                 children: [
                   const SizedBox(height: 40),
