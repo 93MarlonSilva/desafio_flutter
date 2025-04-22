@@ -7,7 +7,7 @@ class DatabaseService {
 
   Future<List<QuizHistoryModel>> getQuizHistory() async {
     try {
-      debugPrint('=== GETTING QUIZ HISTORY DB ===');
+      debugPrint('=== GETTING QUIZ HISTORY ===');
       final box = Hive.box<QuizHistoryModel>(_quizHistoryBox);
       final history = box.values.toList();
       debugPrint('Retrieved ${history.length} records from database');

@@ -81,7 +81,8 @@ Para demonstrar que posso escrever código em inglês ou português, conforme o 
 ### ✅ Acesse online
 
 Você pode acessar o projeto diretamente na web pelo link:  
-Quiz Challenge: https://quiz-challenge-ciandt.vercel.app/
+
+👉 Quiz Challenge: [https://quiz-challenge-ciandt.vercel.app/](https://quiz-challenge-ciandt.vercel.app/){:target="_blank"}
 
 <div style="display: flex; justify-content: space-between; margin: 20px 0;">
   <img src="assets/images/splashHome.png" alt="Splash Home" width="200"/>
