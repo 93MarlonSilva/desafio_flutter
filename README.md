@@ -84,9 +84,9 @@ Você pode acessar o projeto diretamente na web pelo link:
 Quiz Challenge: https://quiz-challenge-ciandt.vercel.app/
 
 <div style="display: flex; justify-content: space-between; margin: 20px 0;">
-  <img src="assets/splashHome.png" alt="Splash Home" width="200"/>
-  <img src="assets/splashQuiz.png" alt="Splash Quiz" width="200"/>
-  <img src="assets/splashResult.png" alt="Splash Result" width="200"/>
+  <img src="assets/images/splashHome.png" alt="Splash Home" width="200"/>
+  <img src="assets/images/splashQuiz.png" alt="Splash Quiz" width="200"/>
+  <img src="assets/images/splashResult.png" alt="Splash Result" width="200"/>
 </div>
 
 ### 📱 Executando localmente
