@@ -77,19 +77,19 @@ Para demonstrar que posso escrever código em inglês ou português, conforme o 
 
 
 ## 📚 Bibliotecas
-http: Requisições api
-provider: ChangeNotifier
-google_fonts: Fonte nunito
-html_unescape: Decode html caracteres vindo nas perguntas e respostas
-shared_preferences: Gravar o maior score
 
-path: Acredito que utilizei pro caminho do banco
-path_provider: Dependencias do provider
-hive: Banco para salvar a listagem do historico dos quiz realizados
-hive_flutter: Dependencias do hive
-hive_generator: Dependencias do hive
-build_runner: Dependencias do hive 
-integration_test: Teste de integração
+- **http**: Requisições api
+- **provider**: ChangeNotifier
+- **google_fonts**: Fonte nunito
+- **html_unescape**: Decode html caracteres vindo nas perguntas e respostas
+- **shared_preferences**: Gravar o maior score
+- **path**: Acredito que utilizei pro caminho do banco
+- **path_provider**: Dependencias do provider
+- **hive**: Banco para salvar a listagem do historico dos quiz realizados
+- **hive_flutter**: Dependencias do hive
+- **hive_generator**: Dependencias do hive
+- **build_runner**: Dependencias do hive 
+- **integration_test**: Teste de integração
 
 
 ## 🚀 Como rodar o projeto

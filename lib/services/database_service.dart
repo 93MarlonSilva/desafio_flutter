@@ -21,7 +21,7 @@ class DatabaseService {
 
   Future<void> saveQuizHistory(QuizHistoryModel quiz) async {
     try {
-      debugPrint('=== SAVING QUIZ TO DATABASE DB ===');
+      debugPrint('=== SAVING QUIZ TO DATABASE ===');
       debugPrint('Quiz data to save:');
       debugPrint('- Date: ${quiz.date}');
       debugPrint('- Total Time: ${quiz.totalTime}');
