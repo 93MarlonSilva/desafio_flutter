@@ -4,7 +4,9 @@ import 'package:quizchallenge/widgets/list_quiz_item_widget.dart';
 
 void main() {
   group('ListQuizItemWidget Tests', () {
-    testWidgets('should display correct text and letter', (WidgetTester tester) async {
+    testWidgets('should display correct text and letter', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -59,4 +61,4 @@ void main() {
       expect(tapped, isTrue);
     });
   });
-} 
+}

@@ -20,7 +20,6 @@ class ListQuizItemWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 335,
         height: 60,
         decoration: BoxDecoration(
           color:

@@ -22,7 +22,9 @@ void main() {
       expect(find.text('60'), findsOneWidget);
     });
 
-    testWidgets('should call onTimeUp when time reaches zero', (WidgetTester tester) async {
+    testWidgets('should call onTimeUp when time reaches zero', (
+      WidgetTester tester,
+    ) async {
       final isRunning = ValueNotifier<bool>(true);
       var timeUpCalled = false;
       await tester.pumpWidget(
@@ -56,4 +58,4 @@ void main() {
       expect(timeUpCalled, isTrue);
     });
   });
-} 
+}

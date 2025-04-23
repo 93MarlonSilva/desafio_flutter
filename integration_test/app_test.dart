@@ -75,6 +75,27 @@ void main() async {
       // Verify we're on the score screen by checking for any text containing "Quiz result"
       expect(find.textContaining('Quiz result'), findsOneWidget);
 
+      // Click "Try Again" button
+      await tester.tap(find.text('TRY AGAIN'));
+      await tester.pumpAndSettle();
+
+      // Answer the same questions again
+      for (int i = 0; i < 5; i++) {
+        // Select first option as answer
+        await tester.tap(find.byKey(Key('quiz_option_0')));
+        await tester.pumpAndSettle();
+
+        // Click continue button
+        await tester.tap(find.text('NEXT'));
+        await tester.pumpAndSettle();
+
+        // Wait for next question
+        await tester.pumpAndSettle();
+      }
+
+      // Verify we're back on the score screen
+      expect(find.textContaining('Quiz result'), findsOneWidget);
+
       // Close score screen
       await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();

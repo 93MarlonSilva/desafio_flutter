@@ -25,6 +25,19 @@ class _QuizViewState extends State<QuizView> {
     super.dispose();
   }
 
+  void _exitQuiz(BuildContext context, QuizViewModel quizViewModel) {
+    _isCronRunning.value = false;
+    quizViewModel.stopCron();
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      Routes.home,
+      (route) => false,
+    ).then((_) {
+      quizViewModel.resetQuiz();
+      quizViewModel.setQuestions([]);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<MainViewModel>(
@@ -41,7 +54,13 @@ class _QuizViewState extends State<QuizView> {
                     const SizedBox(height: 40),
                     Consumer<QuizViewModel>(
                       builder: (context, viewModel, child) {
-                        _isCronRunning.value = viewModel.isCronRunning;
+                        // Atualiza o estado do cronômetro
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          if (_isCronRunning.value != viewModel.isCronRunning) {
+                            _isCronRunning.value = viewModel.isCronRunning;
+                          }
+                        });
+
                         return KeyedSubtree(
                           key: ValueKey(viewModel.currentQuestionIndex),
                           child: Row(
@@ -69,38 +88,21 @@ class _QuizViewState extends State<QuizView> {
                               const SizedBox(width: 31),
                               Text(
                                 'Quiz #${viewModel.quizNumber}',
-                                style: Theme.of(
-                                  context,
-                                ).textTheme.displayMedium!.copyWith(
-                                  fontSize: 18,
-                                  color: AppColors.black,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayMedium!
+                                    .copyWith(
+                                      fontSize: 18,
+                                      color: AppColors.black,
+                                    ),
                               ),
                               const Spacer(),
                               InkWell(
-                                onTap: () {
-                                  debugPrint(
-                                    'Close button pressed - Stopping cronometer',
-                                  );
-                                  _isCronRunning.value = false;
-                                  final quizViewModel =
-                                      context.read<QuizViewModel>();
-                                  quizViewModel.stopCron();
-
-                                  // Primeiro navega, depois reseta
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    Routes.home,
-                                    (route) => false,
-                                  ).then((_) {
-                                    quizViewModel.resetQuiz();
-                                    quizViewModel.setQuestions([]);
-                                  });
-                                },
+                                onTap: () => _exitQuiz(context, viewModel),
                                 child: Container(
                                   width: 36,
                                   height: 36,
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                     color: AppColors.backgroundLight,
                                     shape: BoxShape.circle,
                                   ),
@@ -113,68 +115,71 @@ class _QuizViewState extends State<QuizView> {
                       },
                     ),
                     const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Consumer<QuizViewModel>(
-                          builder: (context, viewModel, child) {
-                            return ProgressTrackWidget(
-                              currentIndex: viewModel.currentQuestionIndex,
-                              totalQuestions: viewModel.questions.length,
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 40),
                     Consumer<QuizViewModel>(
                       builder: (context, viewModel, child) {
-                        return Expanded(
-                          child: Column(
-                            children: [
-                              Text(
-                                viewModel.currentQuestion.question,
-                                style:
-                                    Theme.of(context).textTheme.displayLarge!,
-                                textAlign: TextAlign.start,
-                              ),
-                              const SizedBox(height: 64),
-                              ListView.builder(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount:
-                                    viewModel.currentQuestionOptions.length,
-                                itemBuilder: (context, index) {
-                                  final option =
-                                      viewModel.currentQuestionOptions[index];
-                                  final letter = String.fromCharCode(
-                                    65 + index,
-                                  );
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 30),
-                                    child: ListQuizItemWidget(
-                                      key: Key('quiz_option_$index'),
-                                      text: option,
-                                      letter: letter,
-                                      isSelected:
-                                          viewModel.userAnswers[viewModel
-                                              .currentQuestionIndex] ==
-                                          option,
-                                      onTap: () {
-                                        viewModel.setUserAnswer(
-                                          viewModel.currentQuestionIndex,
-                                          option,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ProgressTrackWidget(
+                              currentIndex: viewModel.currentQuestionIndex,
+                              totalQuestions: viewModel.questions.length,
+                            ),
+                          ],
                         );
                       },
                     ),
+                    const SizedBox(height: 40),
+                    Expanded(
+                      child: Consumer<QuizViewModel>(
+                        builder: (context, viewModel, child) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                viewModel.currentQuestion.question,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displayLarge!,
+                                textAlign: TextAlign.start,
+                              ),
+                              const SizedBox(height: 40),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount:
+                                      viewModel.currentQuestionOptions.length,
+                                  itemBuilder: (context, index) {
+                                    final option = viewModel
+                                        .currentQuestionOptions[index];
+                                    final letter =
+                                        String.fromCharCode(65 + index);
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 30),
+                                      child: ListQuizItemWidget(
+                                        key: Key('quiz_option_$index'),
+                                        text: option,
+                                        letter: letter,
+                                        isSelected: viewModel.userAnswers[
+                                                viewModel
+                                                    .currentQuestionIndex] ==
+                                            option,
+                                        onTap: () {
+                                          viewModel.setUserAnswer(
+                                            viewModel.currentQuestionIndex,
+                                            option,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Consumer<QuizViewModel>(
                       builder: (context, viewModel, child) {
                         return CustomButtonWidget(
@@ -191,9 +196,7 @@ class _QuizViewState extends State<QuizView> {
                             }
                             if (viewModel.currentQuestionIndex ==
                                 viewModel.questions.length - 1) {
-                              final quizViewModel =
-                                  context.read<QuizViewModel>();
-                              quizViewModel.stopCron();
+                              viewModel.stopCron();
                             }
                             viewModel.nextQuestion(context);
                           },

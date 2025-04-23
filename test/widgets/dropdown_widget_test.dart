@@ -34,7 +34,9 @@ void main() {
       expect(find.text('Option 1'), findsOneWidget);
     });
 
-    testWidgets('should show all options when tapped', (WidgetTester tester) async {
+    testWidgets('should show all options when tapped', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -57,7 +59,9 @@ void main() {
       expect(find.text('Option 3'), findsOneWidget);
     });
 
-    testWidgets('should call onChanged when new option is selected', (WidgetTester tester) async {
+    testWidgets('should call onChanged when new option is selected', (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -80,4 +84,4 @@ void main() {
       expect(selectedValue, equals('Option 2'));
     });
   });
-} 
+}

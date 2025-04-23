@@ -16,7 +16,6 @@ class ScoreCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 335,
       height: 144,
       decoration: BoxDecoration(
         color: AppColors.background,

@@ -42,7 +42,6 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
   void _onRunningChanged() {
     if (!widget.isRunning.value) {
       _timer.cancel();
-      debugPrint('CronQuizWidget: Timer fechado');
     }
   }
 
@@ -52,12 +51,8 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
         setState(() {
           _seconds--;
           widget.onTimeUpdate(_seconds);
-          debugPrint(
-            'CronQuizWidget: Tempo atualizado para $_seconds segundos',
-          );
         });
       } else if (_seconds == 0) {
-        debugPrint('CronQuizWidget: Tempo acabou!');
         widget.onTimeEnd();
         _timer.cancel();
       }
@@ -70,16 +65,12 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
       _seconds = widget.initialSeconds;
     });
     _startTimer();
-    debugPrint('CronQuizWidget: Timer reiniciado com $_seconds segundos');
   }
 
   @override
   void didUpdateWidget(CronQuizWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.initialSeconds != widget.initialSeconds) {
-      debugPrint(
-        'CronQuizWidget: Reiniciando timer com ${widget.initialSeconds} segundos',
-      );
       _resetTimer();
     }
   }
@@ -107,9 +98,9 @@ class _CronQuizWidgetState extends State<CronQuizWidget> {
           const SizedBox(width: 4),
           Text(
             '$_seconds',
-            style: Theme.of(context).textTheme.displayMedium!.copyWith(
-              fontSize: 14,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.displayMedium!.copyWith(fontSize: 14),
           ),
         ],
       ),

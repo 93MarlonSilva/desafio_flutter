@@ -17,13 +17,14 @@ class ProgressTrackWidget extends StatelessWidget {
     final validCurrentIndex = currentIndex.clamp(0, validTotalQuestions - 1);
 
     // Horizontal side padding
-    const externalPadding = 20.0; 
-    final totalScreenWidth = MediaQuery.of(context).size.width - externalPadding;
+    const externalPadding = 20.0;
+    final totalScreenWidth =
+        MediaQuery.of(context).size.width - externalPadding;
 
     // Calc space used by track
-    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: AppColors.percentageText,
-        );
+    final textStyle = Theme.of(
+      context,
+    ).textTheme.bodyLarge?.copyWith(color: AppColors.percentageText);
     final textPainter = TextPainter(
       text: TextSpan(
         text: '$validTotalQuestions/$validTotalQuestions',
@@ -32,11 +33,12 @@ class ProgressTrackWidget extends StatelessWidget {
       textDirection: TextDirection.ltr,
     )..layout();
     final textWidth = textPainter.width;
-    const sizedBoxWidth = 12.0; 
+    const sizedBoxWidth = 12.0;
     const internalPadding = 32.0; // Internal padding
 
     // Space available for track
-    final screenWidth = totalScreenWidth - internalPadding - textWidth - sizedBoxWidth;
+    final screenWidth =
+        totalScreenWidth - internalPadding - textWidth - sizedBoxWidth;
 
     // Indicator width (dynamic based on number of questions)
     final minIndicatorWidth = 40.0;
@@ -50,10 +52,14 @@ class ProgressTrackWidget extends StatelessWidget {
     final trackWidth = screenWidth - indicatorWidth;
 
     // Space between indicator positions
-    final spacing = validTotalQuestions > 1 ? trackWidth / (validTotalQuestions - 1) : 0.0;
+    final spacing =
+        validTotalQuestions > 1 ? trackWidth / (validTotalQuestions - 1) : 0.0;
 
     // Current indicator position (ensuring it doesn't exceed limits)
-    final indicatorPosition = (validCurrentIndex * spacing).clamp(0.0, trackWidth);
+    final indicatorPosition = (validCurrentIndex * spacing).clamp(
+      0.0,
+      trackWidth,
+    );
 
     return SizedBox(
       width: totalScreenWidth - internalPadding,

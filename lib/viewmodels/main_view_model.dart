@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 import 'package:quizchallenge/common/functions.dart';
 import 'package:quizchallenge/common/routes.dart';
+import 'package:quizchallenge/models/quiz_history_model.dart';
+import 'package:quizchallenge/viewmodels/quiz_view_model.dart';
 import '../models/category_model.dart';
 
 class MainViewModel extends ChangeNotifier {
@@ -52,6 +56,7 @@ class MainViewModel extends ChangeNotifier {
     _isLoading = value;
     notifyListeners();
   }
+  
 
   void handleQuizError(BuildContext context, int errorCode) {
     String message;
@@ -102,5 +107,45 @@ class MainViewModel extends ChangeNotifier {
       message: message,
       type: type,
     );
+  }
+
+  Future<void> startQuiz(BuildContext context) async {
+    final quizViewModel = context.read<QuizViewModel>();
+    final mainViewModel = context.read<MainViewModel>();
+
+    try {
+      mainViewModel.setLoading(true);
+      quizViewModel.resetQuiz();
+
+      final request = await quizViewModel.onLoadQuizData(
+        mainViewModel.selectedCategory?.id.toString(),
+        mainViewModel.selectedDifficulty,
+        int.parse(mainViewModel.selectedAmount!),
+      );
+
+      if (!context.mounted) return;
+
+      if (request == 0) {
+        try {
+          final box = Hive.box<QuizHistoryModel>('quizHistory');
+          final nextQuizNumber = box.length + 1;
+          quizViewModel.setQuizNumber(nextQuizNumber);
+          box.close();
+        } catch (e) {
+          mainViewModel.setLoading(false);
+          return;
+        }
+        mainViewModel.setLoading(false);
+        Navigator.pushNamed(context, Routes.quiz);
+      } else {
+        mainViewModel.setLoading(false);
+        mainViewModel.handleQuizError(context, request);
+      }
+    } catch (e) {
+      if (context.mounted) {
+        mainViewModel.setLoading(false);
+        mainViewModel.handleQuizError(context, 8); // API error
+      }
+    }
   }
 }

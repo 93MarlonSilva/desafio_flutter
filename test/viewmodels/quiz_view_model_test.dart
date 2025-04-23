@@ -38,12 +38,6 @@ void main() {
     });
 
     test('Initial state should be empty', () {
-      debugPrint('Initial state test:');
-      debugPrint('Questions length: ${viewModel.questions.length}');
-      debugPrint('User answers length: ${viewModel.userAnswers.length}');
-      debugPrint('Questions: ${viewModel.questions}');
-      debugPrint('User answers: ${viewModel.userAnswers}');
-
       expect(viewModel.questions, isEmpty);
       expect(viewModel.userAnswers, isEmpty);
       expect(viewModel.currentQuestionIndex, equals(0));

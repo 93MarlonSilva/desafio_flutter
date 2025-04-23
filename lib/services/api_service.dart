@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import '../common/constants.dart';
 
@@ -27,8 +26,6 @@ class ApiService {
         .join('&');
 
     final url = Uri.parse('${Constants.baseUrl}?$queryString');
-
-    debugPrint('URL: $url');
 
     final response = await http.get(url);
     final jsonResponse = json.decode(response.body);

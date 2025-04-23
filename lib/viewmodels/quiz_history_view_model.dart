@@ -13,7 +13,7 @@ class QuizHistoryViewModel extends ChangeNotifier {
   bool _isInitialized = false;
 
   QuizHistoryViewModel(this._databaseService) {
-    debugPrint('QuizHistoryViewModel initialized');
+    //
   }
 
   List<QuizHistoryModel> get quizHistory => _quizHistory;
@@ -23,32 +23,18 @@ class QuizHistoryViewModel extends ChangeNotifier {
 
   Future<void> loadQuizHistory() async {
     try {
-      debugPrint('=== LOADING QUIZ HISTORY ===');
       _isLoading = true;
       _isInitialized = false;
       notifyListeners();
 
       _quizHistory.clear();
       _highScore = await SharedPreferencesService.getHighScore();
-      debugPrint('Current high score: $_highScore');
 
       final history = await _databaseService.getQuizHistory();
-      debugPrint('Retrieved ${history.length} records from database');
 
       _quizHistory.addAll(history);
       _quizHistory.sort((a, b) => b.date.compareTo(a.date));
-
-      debugPrint('Loaded ${_quizHistory.length} quiz history records');
-      for (var quiz in _quizHistory) {
-        debugPrint('- Date: ${quiz.date}');
-        debugPrint('  Score: ${quiz.score}');
-        debugPrint('  Total Time: ${quiz.totalTime}');
-        debugPrint('  Correct Answers: ${quiz.correctAnswers}');
-        debugPrint('  Wrong Answers: ${quiz.wrongAnswers}');
-      }
-      debugPrint('=== QUIZ HISTORY LOADED ===');
     } catch (e) {
-      debugPrint('Error loading quiz history: $e');
       rethrow;
     } finally {
       _isLoading = false;
@@ -66,35 +52,23 @@ class QuizHistoryViewModel extends ChangeNotifier {
 
   Future<void> addQuizToHistory(QuizHistoryModel quiz) async {
     try {
-      debugPrint('=== ADDING QUIZ TO HISTORY ===');
-      debugPrint('Quiz to add:');
-      debugPrint('- Date: ${quiz.date}');
-      debugPrint('- Total Time: ${quiz.totalTime}');
-      debugPrint('- Score: ${quiz.score}');
-      debugPrint('- Correct Answers: ${quiz.correctAnswers}');
-      debugPrint('- Wrong Answers: ${quiz.wrongAnswers}');
-
       await _databaseService.saveQuizHistory(quiz);
       await loadQuizHistory();
-      debugPrint('=== QUIZ ADDED TO HISTORY ===');
     } catch (e) {
-      debugPrint('Error adding quiz to history: $e');
       rethrow;
     }
   }
 
   Future<void> clearHistory() async {
     try {
-      debugPrint('=== CLEARING QUIZ HISTORY ===');
       _isLoading = true;
       notifyListeners();
 
       final box = await Hive.openBox<QuizHistoryModel>('quizHistory');
       await box.clear();
       _quizHistory.clear();
-      debugPrint('=== QUIZ HISTORY CLEARED ===');
     } catch (e) {
-      debugPrint('Error clearing quiz history: $e');
+      //
     } finally {
       _isLoading = false;
       notifyListeners();

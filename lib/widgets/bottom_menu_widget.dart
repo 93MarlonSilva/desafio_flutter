@@ -57,11 +57,7 @@ class BottomMenuWidget extends StatelessWidget {
   }) {
     return InkWell(
       onTap: () {
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          route,
-          (route) => false,
-        );
+        Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
       },
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -75,11 +71,11 @@ class BottomMenuWidget extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: isSelected ? AppColors.babyBlue : AppColors.background,
-                ),
+              color: isSelected ? AppColors.babyBlue : AppColors.background,
+            ),
           ),
         ],
       ),
     );
   }
-} 
+}

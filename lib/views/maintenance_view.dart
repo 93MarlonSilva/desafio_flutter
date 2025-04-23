@@ -24,19 +24,19 @@ class MaintenanceView extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               Text(
-                'Não foi possível carregar o quiz no momento',
+                'Unable to load the quiz at the moment',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.displayMedium!,
               ),
               const SizedBox(height: 16),
               Text(
-                'Tente novamente mais tarde',
+                'Please try again later',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.displayMedium!,
               ),
               const Spacer(),
               CustomButtonWidget(
-                text: 'Voltar ao Menu',
+                text: 'Back to Menu',
                 enabled: true,
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
